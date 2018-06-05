@@ -8,10 +8,15 @@ import (
 	"io"
 	"os"
 	"strings"
+
+	"github.com/foxcpp/go-sysid/mountcheck"
 )
 
 func CpuModel() ([]byte, error) {
-	// TODO: Check for non-procfs FS at /proc and return ErrUnreliableInfo.
+	var unreliable error
+	if !mountcheck.IsProc("/proc") {
+		unreliable = ErrUnreliableInfo
+	}
 
 	vendorId := ""
 	family := ""
@@ -19,7 +24,7 @@ func CpuModel() ([]byte, error) {
 
 	f, err := os.Open("/proc/cpuinfo")
 	if err != nil {
-		return []byte("NO_CPU_INFO"), nil
+		return []byte("NO_CPU_INFO"), unreliable
 	}
 
 	scnr := bufio.NewScanner(f)
@@ -38,5 +43,5 @@ func CpuModel() ([]byte, error) {
 		return nil, fmt.Errorf("CpuModel: %v", err)
 	}
 
-	return []byte(vendorId + ":" + family + ":" + model), err
+	return []byte(vendorId + ":" + family + ":" + model), unreliable
 }

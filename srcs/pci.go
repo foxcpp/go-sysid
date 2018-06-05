@@ -8,16 +8,21 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"sort"
+
+	"github.com/foxcpp/go-sysid/mountcheck"
 )
 
 const pciBaseDir = "/sys/bus/pci/devices"
 
 func PCIDeviceList() ([]byte, error) {
-	// TODO: Check for sysfs mount.
+	var unreliable error
+	if !mountcheck.IsSys("/sys") {
+		unreliable = ErrUnreliableInfo
+	}
 
 	files, err := ioutil.ReadDir(pciBaseDir)
 	if err != nil {
-		return []byte("NO_PCI_INFO"), nil
+		return []byte("NO_PCI_INFO"), unreliable
 	}
 
 	sort.Slice(files, func(a, b int) bool {
@@ -49,5 +54,5 @@ func PCIDeviceList() ([]byte, error) {
 		ids = append(ids, bytes.Join([][]byte{[]byte(file.Name()), class, vendor, device}, []byte(":")))
 	}
 
-	return bytes.Join(ids, []byte(":")), nil
+	return bytes.Join(ids, []byte(":")), unreliable
 }

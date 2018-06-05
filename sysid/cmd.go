@@ -77,7 +77,7 @@ func main() {
 		}
 		fmt.Println(string(id))
 	} else {
-		id, err := sysid.HWIDCustom(false, hash.New())
+		id, err := sysid.SysIDCustom(false, hash.New())
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
