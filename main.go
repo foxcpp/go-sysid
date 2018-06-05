@@ -16,6 +16,7 @@ var sources = []func() ([]byte, error){
 	srcs.PCIDeviceList,
 	srcs.MemoryInfo,
 	srcs.ATADeviceNames,
+	srcs.MACAddresses,
 }
 
 func HWIDCustom(allowUnreliable bool, combiner hash.Hash) ([]byte, error) {
