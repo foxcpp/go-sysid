@@ -1,6 +1,10 @@
+// +build linux
+
 package srcs
 
 import (
+	"bytes"
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"sort"
@@ -13,14 +17,14 @@ func PCIDeviceList() ([]byte, error) {
 
 	files, err := ioutil.ReadDir(pciBaseDir)
 	if err != nil {
-		return nil, err
+		return []byte("NO_PCI_INFO"), nil
 	}
 
 	sort.Slice(files, func(a, b int) bool {
 		return files[a].Name() < files[b].Name()
 	})
 
-	result := []byte{}
+	ids := [][]byte{}
 
 	for _, file := range files {
 		var err error
@@ -28,24 +32,22 @@ func PCIDeviceList() ([]byte, error) {
 
 		class, err = ioutil.ReadFile(filepath.Join(pciBaseDir, file.Name(), "class"))
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("PCIDeviceList: %v", err)
 		}
+		class = bytes.TrimSpace(class)
 		vendor, err = ioutil.ReadFile(filepath.Join(pciBaseDir, file.Name(), "vendor"))
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("PCIDeviceList: %v", err)
 		}
+		vendor = bytes.TrimSpace(vendor)
 		device, err = ioutil.ReadFile(filepath.Join(pciBaseDir, file.Name(), "device"))
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("PCIDeviceList: %v", err)
 		}
+		device = bytes.TrimSpace(device)
 
-		result = append(result, class...)
-		result = append(result, byte(':'))
-		result = append(result, vendor...)
-		result = append(result, byte(':'))
-		result = append(result, device...)
-		result = append(result, byte(':'))
+		ids = append(ids, bytes.Join([][]byte{class, vendor, device}, []byte(":")))
 	}
 
-	return result, nil
+	return bytes.Join(ids, []byte(":")), nil
 }

@@ -1,9 +1,10 @@
-//build +linux
+// +build linux
 
 package srcs
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -18,7 +19,7 @@ func CpuModel() ([]byte, error) {
 
 	f, err := os.Open("/proc/cpuinfo")
 	if err != nil {
-		return nil, err
+		return []byte("NO_CPU_INFO"), nil
 	}
 
 	scnr := bufio.NewScanner(f)
@@ -26,15 +27,15 @@ func CpuModel() ([]byte, error) {
 		if strings.HasPrefix(scnr.Text(), "vendor_id") {
 			vendorId = strings.TrimSpace(strings.Split(scnr.Text(), ":")[1])
 		}
-		if strings.HasPrefix(scnr.Text(), "cpu_family") {
+		if strings.HasPrefix(scnr.Text(), "cpu family") {
 			family = strings.TrimSpace(strings.Split(scnr.Text(), ":")[1])
 		}
-		if strings.HasPrefix(scnr.Text(), "model") {
+		if strings.HasPrefix(scnr.Text(), "model\t\t") { // tabs to not touch "model name".
 			model = strings.TrimSpace(strings.Split(scnr.Text(), ":")[1])
 		}
 	}
 	if err := scnr.Err(); err != nil && err != io.EOF {
-		return nil, err
+		return nil, fmt.Errorf("CpuModel: %v", err)
 	}
 
 	return []byte(vendorId + ":" + family + ":" + model), err

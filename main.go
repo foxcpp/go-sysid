@@ -11,8 +11,11 @@ var ErrUnreliableInfo = srcs.ErrUnreliableInfo
 
 var sources = []func() ([]byte, error){
 	srcs.Platform,
+	srcs.OSFlavor,
 	srcs.CpuModel,
 	srcs.PCIDeviceList,
+	srcs.MemoryInfo,
+	srcs.ATADeviceNames,
 }
 
 func HWIDCustom(allowUnreliable bool, combiner hash.Hash) ([]byte, error) {
@@ -23,6 +26,7 @@ func HWIDCustom(allowUnreliable bool, combiner hash.Hash) ([]byte, error) {
 				return nil, err
 			}
 		}
+		res = append(res, byte(':'))
 		if _, err := combiner.Write(res); err != nil {
 			return nil, err
 		}
