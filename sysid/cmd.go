@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/foxcpp/go-hwid"
+	"github.com/foxcpp/go-sysid"
 )
 
 type dummyHash struct {
@@ -70,14 +70,14 @@ func main() {
 	}
 
 	if *rawInfo {
-		id, err := hwid.HWIDCustom(false, &dummyHash{})
+		id, err := sysid.HWIDCustom(false, &dummyHash{})
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 		fmt.Println(string(id))
 	} else {
-		id, err := hwid.HWIDCustom(false, hash.New())
+		id, err := sysid.HWIDCustom(false, hash.New())
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

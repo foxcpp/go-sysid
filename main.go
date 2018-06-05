@@ -1,10 +1,10 @@
-package hwid
+package sysid
 
 import (
 	"crypto/sha512"
 	"hash"
 
-	"github.com/foxcpp/go-hwid/srcs"
+	"github.com/foxcpp/go-sysid/srcs"
 )
 
 var ErrUnreliableInfo = srcs.ErrUnreliableInfo
