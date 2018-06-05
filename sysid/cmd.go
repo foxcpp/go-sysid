@@ -70,7 +70,7 @@ func main() {
 	}
 
 	if *rawInfo {
-		id, err := sysid.HWIDCustom(false, &dummyHash{})
+		id, err := sysid.SysIDCustom(false, &dummyHash{})
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

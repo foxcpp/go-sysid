@@ -19,7 +19,12 @@ var sources = []func() ([]byte, error){
 	srcs.MACAddresses,
 }
 
-func HWIDCustom(allowUnreliable bool, combiner hash.Hash) ([]byte, error) {
+/*
+Collect system information and apply custom hash h on it.
+
+allowUnreliable is currently not used.
+*/
+func SysIDCustom(allowUnreliable bool, h hash.Hash) ([]byte, error) {
 	for _, src := range sources {
 		res, err := src()
 		if err != nil {
@@ -28,13 +33,16 @@ func HWIDCustom(allowUnreliable bool, combiner hash.Hash) ([]byte, error) {
 			}
 		}
 		res = append(res, byte(':'))
-		if _, err := combiner.Write(res); err != nil {
+		if _, err := h.Write(res); err != nil {
 			return nil, err
 		}
 	}
-	return combiner.Sum([]byte{}), nil
+	return h.Sum([]byte{}), nil
 }
 
-func HWID() ([]byte, error) {
-	return HWIDCustom(false, sha512.New())
+/*
+Collect system information and apply SHA-512 on it.
+*/
+func SysID() ([]byte, error) {
+	return SysIDCustom(false, sha512.New())
 }
