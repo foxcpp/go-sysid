@@ -46,7 +46,7 @@ func PCIDeviceList() ([]byte, error) {
 		}
 		device = bytes.TrimSpace(device)
 
-		ids = append(ids, bytes.Join([][]byte{class, vendor, device}, []byte(":")))
+		ids = append(ids, bytes.Join([][]byte{[]byte(file.Name()), class, vendor, device}, []byte(":")))
 	}
 
 	return bytes.Join(ids, []byte(":")), nil
